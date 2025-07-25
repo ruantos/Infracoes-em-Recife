@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-data_path = "../data"
+data_path = "./data"
 raw_path = f"{data_path}/raw"
 parquet_path = f"{data_path}/validated/2023_2025_infrations.parquet"
 
