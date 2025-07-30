@@ -2,41 +2,70 @@ import requests
 import pandas as pd
 import os
 
-links= {
-    "2023": "http://dados.recife.pe.gov.br/dataset/6399f689-f1a7-453b-b839-413bd665c355/resource/c269789d-da47-4dde-8ce7-42fba10fe8e2/download/infracoes-01a12-2023.csv",
-    "2024": "http://dados.recife.pe.gov.br/dataset/6399f689-f1a7-453b-b839-413bd665c355/resource/4adf9430-35a5-4e88-8ecf-b45748b81c7d/download/infracoestransparencia-janeiro-a-dezembro-2024.csv",
-    "2025": "http://dados.recife.pe.gov.br/dataset/6399f689-f1a7-453b-b839-413bd665c355/resource/48bd8822-df18-48d0-bbc1-2de87ca0d70b/download/infracoestransparencia-janeiro-a-maio-2025.csv",
+ENDPOINT = "http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?"
+SQL_QUERY = "sql=SELECT * FROM "
+
+DATA_DIR = "../data"
+RAW_DIR = os.path.join(DATA_DIR, "raw")
+
+id_list = {
+    "2023": "c269789d-da47-4dde-8ce7-42fba10fe8e2",
+    "2024": "4adf9430-35a5-4e88-8ecf-b45748b81c7d",
+    "2025": "48bd8822-df18-48d0-bbc1-2de87ca0d70b",
     }
 
-path_raw = "../data/raw"
-path_validated = "../data/validated"
+
+class Extractor:
+
+    def __init__(self, data_dir: str,
+                 raw_dir: str,
+                 endpoint: str,
+                 query: str,
+                 set_ids: dict[str, str]):
+
+        self.data_dir = data_dir
+        self.raw_dir = raw_dir
+        self.endpoint = endpoint
+        self.query = query
+        self.set_ids = set_ids
+
+    def create_directories(self) -> None:
+        try:
+            os.makedirs(self.data_dir, exist_ok=True)
+            os.makedirs(self.raw_dir, exist_ok=True)
+        except OSError as e:
+            print(f"Error creating directory: {e}")
+
+    def fetch_dataframe(self, id: str) -> pd.DataFrame:
+        url = f'{self.endpoint}{self.query}"{id}"'
+
+        try:
+            response = requests.get(url, timeout=30)
+            return pd.DataFrame(response.json()["result"]["records"])
+
+        except requests.exceptions.RequestException as error:
+            print(f"Houve um erro: {error}")
+            return None
+
+    def save_dataframe(self, dataframe: pd.DataFrame,
+                       year: str, path: str,) -> None:
+
+        dataframe.to_csv(path, index=False)
+        print(f"CSV de {year} baixado com sucesso!")
+
+    def pipeline_extraction(self) -> None:
+        self.create_directories()
+
+        for year, id in self.set_ids.items():
+            df = self.fetch_dataframe(id)
+
+            if df is None:
+                print(f"The {year} dataframe wasnt saved due to an error")
+            else:
+                path = f"{self.raw_dir}/{year}.csv"
+                self.save_dataframe(df, year, path)
 
 
-
-try:
-    os.makedirs("../data", exist_ok=True)
-    os.makedirs(path_raw, exist_ok=True)
-    os.makedirs(path_validated, exist_ok=True)
-    pass
-except:
-    pass
-     
-
-for year, url in links.items():
-
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-
-        with open(f"{path_raw}/{year}.csv", "wb") as file:
-            file.write(response.content)
-
-        print("CSV baixado com sucesso!")
-
-    except requests.exceptions.RequestException as error:
-        print(f"Houve um erro: {error}")
-
-
-for year in links.keys():
-    data_csv = pd.read_csv(f"{path_raw}/{year}.csv", sep=';')
-    data_csv.to_parquet(f"{path_validated}/{year}.parquet", index=False)
+if __name__ == "__main__":
+    ant = Extractor(DATA_DIR, RAW_DIR, ENDPOINT, SQL_QUERY, id_list)
+    ant.pipeline_extraction()
