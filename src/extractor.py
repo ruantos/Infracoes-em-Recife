@@ -15,7 +15,7 @@ id_list = {
     }
 
 
-class Extractor:
+class Pipeline:
 
     def __init__(self, data_dir: str,
                  raw_dir: str,
@@ -67,5 +67,5 @@ class Extractor:
 
 
 if __name__ == "__main__":
-    ant = Extractor(DATA_DIR, RAW_DIR, ENDPOINT, SQL_QUERY, id_list)
+    ant = Pipeline(DATA_DIR, RAW_DIR, ENDPOINT, SQL_QUERY, id_list)
     ant.pipeline_extraction()
