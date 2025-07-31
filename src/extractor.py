@@ -49,21 +49,15 @@ class Extractor:
 
     def save_dataframe(self, dataframe: pd.DataFrame,
                        year: str, path: str,) -> None:
+        if dataframe is None:
+            print(f"The {year} dataframe wasnt saved due to an error")
+            return
 
         dataframe.to_csv(path, index=False)
         print(f"CSV de {year} baixado com sucesso!")
 
     def pipeline_extraction(self) -> None:
         self.create_directories()
-
-        for year, id in self.set_ids.items():
-            df = self.fetch_dataframe(id)
-
-            if df is None:
-                print(f"The {year} dataframe wasnt saved due to an error")
-            else:
-                path = f"{self.raw_dir}/{year}.csv"
-                self.save_dataframe(df, year, path)
 
 
 if __name__ == "__main__":
