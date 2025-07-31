@@ -29,7 +29,6 @@ for file in raw_files:
         print(error)
 
 
-df_unified = pd.concat(dframes, ignore_index=True).drop_duplicates()
 
 columns_to_drop = [
     'dataimplantacao', 'descricaoinfracao', 'amparolegal'
@@ -51,9 +50,3 @@ try:
 except Exception as error:
     print(error)
 
-
-try:
-    df_unified.to_parquet(parquet_path, index=False)
-    print("Dataframe concatenado salvo com sucesso!")
-except Exception as error:
-    print(error)
