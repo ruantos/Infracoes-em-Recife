@@ -21,20 +21,12 @@ dtypes = {
 
 dframes = []
 
-for file in raw_files: 
+for file in raw_files:
     try:
-        dframes.append( pd.read_csv(file, sep=";", dtype=dtypes))
+        dframes.append(pd.read_csv(file, sep=";", dtype=dtypes))
         print("CSV lido com sucesso!")
     except Exception as error:
         print(error)
-
-
-
-columns_to_drop = [
-    'dataimplantacao', 'descricaoinfracao', 'amparolegal'
-]
-
-df_unified.drop(columns=columns_to_drop, inplace=True)
 
 
 col_types = {
@@ -49,4 +41,3 @@ try:
     df_unified = df_unified.astype(col_types)
 except Exception as error:
     print(error)
-

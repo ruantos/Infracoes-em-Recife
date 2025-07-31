@@ -47,13 +47,19 @@ class Extractor:
             print(f"Houve um erro: {error}")
             return None
 
-    def save_dataframe(self, dataframe: pd.DataFrame,
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        columns_to_drop = [
+            'dataimplantacao', 'descricaoinfracao', 'amparolegal'
+            ]
+        return df.drop(columns=columns_to_drop, inplace=True)
+
+    def save_dataframe(self, df: pd.DataFrame,
                        year: str, path: str,) -> None:
-        if dataframe is None:
+        if df is None:
             print(f"The {year} dataframe wasnt saved due to an error")
             return
 
-        dataframe.to_csv(path, index=False)
+        df.to_csv(path, index=False)
         print(f"CSV de {year} baixado com sucesso!")
 
     def pipeline_extraction(self) -> None:
