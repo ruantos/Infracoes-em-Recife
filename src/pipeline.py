@@ -47,11 +47,21 @@ class Pipeline:
             print(f"Houve um erro: {error}")
             return None
 
-    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
-        columns_to_drop = [
-            'dataimplantacao', 'descricaoinfracao', 'amparolegal'
+    def fix_columns(df) -> pd.DataFrame:
+        cols_to_drop = [
+            'dataimplantacao', 'descricaoinfracao', 'amparolegal', '_full_text'
             ]
-        return df.drop(columns=columns_to_drop, inplace=True)
+
+        df.set_index("_id", inplace=True)
+        df = df.drop(columns=cols_to_drop)
+        df['horainfracao'] = pd.to_datetime(df['horainfracao'],
+                                            format="%H:%M:%S")
+        df['datainfracao'] = pd.to_datetime(df['datainfracao'], yearfirst=True)
+        return df
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = self.fix_columns(df)
+        return df
 
     def save_dataframe(self, df: pd.DataFrame,
                        year: str, path: str,) -> None:
