@@ -47,16 +47,26 @@ class Pipeline:
             print(f"Houve um erro: {error}")
             return None
 
-    def fix_columns(df: pd.Dataframe) -> pd.DataFrame:
+    def drop_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         cols_to_drop = [
             'dataimplantacao', 'descricaoinfracao', 'amparolegal', '_full_text'
             ]
+        return df.drop(columns=cols_to_drop)
+
+    def fix_columns(self, df: pd.Dataframe) -> pd.DataFrame:
+        df = self.drop_columns(df)
 
         df.set_index("_id", inplace=True)
-        df = df.drop(columns=cols_to_drop)
-        df['horainfracao'] = pd.to_datetime(df['horainfracao'],
-                                            format="%H:%M:%S")
+
+        df['horainfracao'] = pd.to_datetime(df['horainfracao'], format="%H:%M:%S")
         df['datainfracao'] = pd.to_datetime(df['datainfracao'], yearfirst=True)
+
+        return df
+
+    def remove_garbage(df: pd.DataFrame) -> pd.DataFrame:
+        df = df.drop_duplicates(subset=["infracao", "horainfracao",
+                                        "datainfracao"])
+        df = df.dropna(axis=0, subset=["infracao"])
         return df
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
