@@ -47,7 +47,7 @@ class Pipeline:
             print(f"Houve um erro: {error}")
             return None
 
-    def fix_columns(df) -> pd.DataFrame:
+    def fix_columns(df: pd.Dataframe) -> pd.DataFrame:
         cols_to_drop = [
             'dataimplantacao', 'descricaoinfracao', 'amparolegal', '_full_text'
             ]
