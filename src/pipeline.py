@@ -64,7 +64,7 @@ class Pipeline:
         df["mes"] = df["datainfracao"].dt.month
         df["hora"] = df["horainfracao"].dt.hour
 
-        df["feriado"] = df["datainfracao"].dt.weekday > 4
+        df["is_feriado"] = df["datainfracao"].dt.weekday > 4
 
         return df
 
