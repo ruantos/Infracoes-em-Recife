@@ -64,6 +64,8 @@ class Pipeline:
         df["mes"] = df["datainfracao"].dt.month
         df["hora"] = df["horainfracao"].dt.hour
 
+        df["feriado"] = df["datainfracao"].dt.weekday > 4
+
         return df
 
     def fix_columns(self, df: pd.Dataframe) -> pd.DataFrame:
