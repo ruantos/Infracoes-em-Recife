@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import os
 
-ENDPOINT = "http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?"
+URL = "http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?"
 SQL_QUERY = "sql=SELECT * FROM "
 
 DATA_DIR = "../data"
@@ -47,16 +47,40 @@ class Pipeline:
             print(f"Houve um erro: {error}")
             return None
 
-    def fix_columns(df) -> pd.DataFrame:
+    def drop_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         cols_to_drop = [
-            'dataimplantacao', 'descricaoinfracao', 'amparolegal', '_full_text'
+            'dataimplantacao', 'descricaoinfracao',
+            'amparolegal', '_full_text',
+            'horainfracao', 'datainfracao'
             ]
+        return df.drop(columns=cols_to_drop)
 
-        df.set_index("_id", inplace=True)
-        df = df.drop(columns=cols_to_drop)
+    def extract_date(self, df: pd.DataFrame) -> pd.DataFrame:
         df['horainfracao'] = pd.to_datetime(df['horainfracao'],
                                             format="%H:%M:%S")
         df['datainfracao'] = pd.to_datetime(df['datainfracao'], yearfirst=True)
+
+        df["ano"] = df["datainfracao"].dt.year
+        df["mes"] = df["datainfracao"].dt.month
+        df["hora"] = df["horainfracao"].dt.hour
+
+        df["is_feriado"] = df["datainfracao"].dt.weekday > 4
+
+        return df
+
+    def fix_columns(self, df: pd.Dataframe) -> pd.DataFrame:
+        df.set_index("_id", inplace=True)
+
+        df = self.extract_date(df)
+        df = self.drop_columns(df)
+
+        return df
+
+    def remove_garbage(df: pd.DataFrame) -> pd.DataFrame:
+        df = df.drop_duplicates(
+            subset=["infracao", "horainfracao", "datainfracao"])
+
+        df = df.dropna(axis=0, subset=["infracao"])
         return df
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -77,5 +101,5 @@ class Pipeline:
 
 
 if __name__ == "__main__":
-    ant = Pipeline(DATA_DIR, RAW_DIR, ENDPOINT, SQL_QUERY, id_list)
+    ant = Pipeline(DATA_DIR, RAW_DIR, URL, SQL_QUERY, id_list)
     ant.pipeline_extraction()
