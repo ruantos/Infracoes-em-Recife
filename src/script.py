@@ -1,42 +1,44 @@
-import requests
-import pandas as pd
+from dotenv import load_dotenv
 import os
+from load import Manager
+from pipeline import Pipeline
 
-links= {
-    "2023": "http://dados.recife.pe.gov.br/dataset/6399f689-f1a7-453b-b839-413bd665c355/resource/c269789d-da47-4dde-8ce7-42fba10fe8e2/download/infracoes-01a12-2023.csv",
-    "2024": "http://dados.recife.pe.gov.br/dataset/6399f689-f1a7-453b-b839-413bd665c355/resource/4adf9430-35a5-4e88-8ecf-b45748b81c7d/download/infracoestransparencia-janeiro-a-dezembro-2024.csv",
-    "2025": "http://dados.recife.pe.gov.br/dataset/6399f689-f1a7-453b-b839-413bd665c355/resource/48bd8822-df18-48d0-bbc1-2de87ca0d70b/download/infracoestransparencia-janeiro-a-maio-2025.csv",
-    }
+if __name__ == "__main__":
+    URL = "http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?"
+    SQL_QUERY = "sql=SELECT * FROM "
 
-path_raw = "../data/raw"
-path_validated = "../data/validated"
+    DATA_DIR = "../data"
+    RAW_DIR = os.path.join(DATA_DIR, "raw")
+    id_list = {
+        "2023": "c269789d-da47-4dde-8ce7-42fba10fe8e2",
+        "2024": "4adf9430-35a5-4e88-8ecf-b45748b81c7d",
+        "2025": "48bd8822-df18-48d0-bbc1-2de87ca0d70b",
+        }
+    load_dotenv()
+    host = os.environ["DB_HOST"]
+    database = os.environ["DATABASE"]
+    user = os.environ["DB_USER"]
+    password = os.environ["DB_PASSWORD"]
+    port = os.environ["PORT"]
 
+    man = Manager(host, database,
+                  user, password, port)
+    man.connect()
+    man.create_table()
+    ant = Pipeline(DATA_DIR, RAW_DIR, URL, SQL_QUERY)
 
+    for year, id in id_list.items():
+        try:
+            print(f"Fetching {year} file")
+            df = ant.fetch_dataframe(id)
+            df = ant.transform(df)
+            records = df.to_numpy().tolist()
+            try:
+                man.insert(records)
+                print(f"{year} records loaded successufully!")
+            except Exception as e:
+                print(f"Error caught: {e}")
+        except Exception as e:
+            print(f"Erro caught: {e}")
 
-try:
-    os.makedirs("../data", exist_ok=True)
-    os.makedirs(path_raw, exist_ok=True)
-    os.makedirs(path_validated, exist_ok=True)
-    pass
-except:
-    pass
-     
-
-for year, url in links.items():
-
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-
-        with open(f"{path_raw}/{year}.csv", "wb") as file:
-            file.write(response.content)
-
-        print("CSV baixado com sucesso!")
-
-    except requests.exceptions.RequestException as error:
-        print(f"Houve um erro: {error}")
-
-
-for year in links.keys():
-    data_csv = pd.read_csv(f"{path_raw}/{year}.csv", sep=';')
-    data_csv.to_parquet(f"{path_validated}/{year}.parquet", index=False)
+    man.close()
