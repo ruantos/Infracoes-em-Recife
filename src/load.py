@@ -53,7 +53,7 @@ class Manager:
             """
             self.cur.executemany(insert_script, records)
             self.conn.commit()
-            print(f"{self.cur.rowcount} dados inseridos com sucesso")
+            print(f"{self.cur.rowcount} dados inseridos com sucesso!")
 
         except Exception as e:
             print(f"Erro durante inserção: {e}")
