@@ -73,6 +73,7 @@ class Pipeline:
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         df = self.fix_columns(df)
+        df = self.remove_garbage(df)
         return df
 
     def save_dataframe(self, df: pd.DataFrame,
