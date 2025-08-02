@@ -1,5 +1,4 @@
 requests
 pandas
-matplotlib
-seaborn
-streamlit
+psycopg2-binary
+python-dotenv	

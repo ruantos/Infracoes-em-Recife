@@ -9,13 +9,12 @@ class Pipeline:
                  raw_dir: str,
                  endpoint: str,
                  query: str,
-                 set_ids: dict[str, str]):
+                 ):
 
         self.data_dir = data_dir
         self.raw_dir = raw_dir
         self.endpoint = endpoint
         self.query = query
-        self.set_ids = set_ids
 
     def create_directories(self) -> None:
         try:
@@ -37,7 +36,7 @@ class Pipeline:
 
     def drop_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         cols_to_drop = [
-            'dataimplantacao', 'descricaoinfracao',
+            'dataimplantacao', 'descricaoinfracao', '_id',
             'amparolegal', '_full_text',
             'horainfracao', 'datainfracao'
             ]
@@ -56,17 +55,15 @@ class Pipeline:
 
         return df
 
-    def fix_columns(self, df: pd.Dataframe) -> pd.DataFrame:
-        df.set_index("_id", inplace=True)
-
+    def fix_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         df = self.extract_date(df)
         df = self.drop_columns(df)
 
         return df
 
-    def remove_garbage(df: pd.DataFrame) -> pd.DataFrame:
+    def remove_garbage(self, df: pd.DataFrame) -> pd.DataFrame:
         df = df.drop_duplicates(
-            subset=["infracao", "horainfracao", "datainfracao"])
+            subset=["infracao", "hora", "ano", "mes"])
 
         df = df.dropna(axis=0, subset=["infracao"])
         return df
@@ -84,6 +81,3 @@ class Pipeline:
 
         df.to_csv(path, index=False)
         print(f"CSV de {year} baixado com sucesso!")
-
-    def pipeline_extraction(self) -> None:
-        self.create_directories()
