@@ -37,40 +37,45 @@ Siga os passos abaixo para executar o projeto localmente.
 
 ### 1. Clone o Repositório
 ```bash
-git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
-cd seu-repositorio
+git clone git@github.com:ruantos/Infracoes-em-Recife.git
+cd Infracoes-em-Recife
+```
 
 ### 2. Crie e Ative um Ambiente Virtual
 
 É uma boa prática usar um ambiente virtual para isolar as dependências do projeto.
-
+```bash
 python3 -m venv venv
-
+```
 - Ativar no Linux/macOS
+```bash
 source venv/bin/activate
-
+```
 - Ativar no Windows
+```bash
 .\venv\Scripts\activate
-
+```
 ### 3. Instale as Dependências
 
 Copie o seguinte comando para baixar as dependências:
-
+```bash
 pip install -r requirements.tx
-
+```
 ### 4. Configure as Variáveis de Ambiente
 
 Crie um arquivo chamado .env na raiz do projeto. Ele guardará as credenciais de acesso ao seu banco de dados. Copie o conteúdo abaixo e preencha com suas informações.
-
+```bash
 # .env
 DB_HOST=localhost
 DATABASE=etl
 DB_USER=postgres
 DB_PASSWORD=sua_senha
 PORT=5432
-
+```
 
 ## Como usar?
 
-1. Navegue até o diretório do projeto
-2. Digite: python3 src/script.py
+Basta navegar até o diretório do projeto e digitar:
+```bash
+python3 src/script.py
+```
