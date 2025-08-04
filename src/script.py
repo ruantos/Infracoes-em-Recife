@@ -7,8 +7,6 @@ if __name__ == "__main__":
     URL = "http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?"
     SQL_QUERY = "sql=SELECT * FROM "
 
-    DATA_DIR = "../data"
-    RAW_DIR = os.path.join(DATA_DIR, "raw")
     id_list = {
         "2023": "c269789d-da47-4dde-8ce7-42fba10fe8e2",
         "2024": "4adf9430-35a5-4e88-8ecf-b45748b81c7d",
@@ -25,7 +23,7 @@ if __name__ == "__main__":
                   user, password, port)
     man.connect()
     man.create_table()
-    ant = Pipeline(DATA_DIR, RAW_DIR, URL, SQL_QUERY)
+    ant = Pipeline(URL, SQL_QUERY)
 
     for year, id in id_list.items():
         try:
