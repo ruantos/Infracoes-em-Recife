@@ -23,15 +23,15 @@ if __name__ == "__main__":
     
     for year, id in id_list.items():
         try:
-            print(f"Fetching {year} file")
+            print(f"Fetching {year} file...")
             df = fetch_dataframe(id)
 
-            if df:
+            if not df.empty:
                 df = cleaner.transform(df)
-                records = df.to_numpy().tolist()
+                records = df.to_dict('records')
 
                 supabase.insert(records)
-                print(f"{year} records loaded successufully!")
+                print(f"{year} records loaded successfully!")
 
             else:
                 print(f"{year} file is empty or couldn't be found")
