@@ -1,6 +1,6 @@
 from supabase import create_client
 
-class Manager:
+class Loader:
     def __init__(self, project_url: str, api_key: str ) -> None:
 
         self.url = project_url
@@ -11,6 +11,7 @@ class Manager:
     def connect(self) -> None:
         try:
             self.client = create_client(self.url, self.key)
+            print('Client created successfully')
         except Exception as e:
             print(f'Error caught while connecting to {self.url}: {e}')
 
@@ -20,11 +21,4 @@ class Manager:
             self.client.insert_many(records)
 
         except Exception as e:
-            print(f"Erro durante inserção: {e}")
-
-
-    def close(self) -> None:
-        if self.cur is not None:
-            self.cur.close()
-        if self.conn is not None:
-            self.conn.close()
+            print(f"Error during insertion: {e}")
