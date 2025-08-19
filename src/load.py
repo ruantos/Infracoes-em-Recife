@@ -22,23 +22,9 @@ class Loader:
         try:
             if records:
                 self.supabase.table('infracoes').insert(records).execute()
+                print(f'{len(records)} records inserted :)')
+
             else:
                 print('Empty records')
         except Exception as e:
             print(f"Error during insertion: {e}")
-        finally:
-            print(f'{len(records)} records inserted')
-
-
-if __name__ == '__main__':
-    load_dotenv()
-
-    url = os.environ.get('PROJECT_URL')
-    key = os.environ.get('API_KEY')
-
-    loader = Loader(url, key)
-    loader.connect()
-
-    records = {}
-
-    loader.insert(records)
