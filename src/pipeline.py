@@ -12,16 +12,6 @@ class Pipeline:
         self.url = url
         self.query = query
 
-    def fetch_dataframe(self, id: str) -> pd.DataFrame:
-        url = f'{self.url}{self.query}"{id}"'
-
-        try:
-            response = requests.get(url, timeout=30)
-            return pd.DataFrame(response.json()["result"]["records"])
-
-        except requests.exceptions.RequestException as error:
-            print(f"Houve um erro: {error}")
-            return None
 
     def drop_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         cols_to_drop = [
