@@ -13,7 +13,7 @@ class Loader:
     def connect(self) -> None:
         try:
             self.supabase = create_client(self.url, self.key)
-            print('Client created successfully')
+            print('Client created successfully!')
         except Exception as e:
             print(f'Error caught while connecting to {self.url}: {e}')
 
