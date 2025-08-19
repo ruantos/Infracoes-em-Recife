@@ -1,17 +1,7 @@
-import requests
 import pandas as pd
 
 
-class Pipeline:
-
-    def __init__(self,
-                 url: str,
-                 query: str,
-                 ):
-
-        self.url = url
-        self.query = query
-
+class Transformer:
 
     def drop_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         cols_to_drop = [
