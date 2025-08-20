@@ -1,6 +1,5 @@
 from supabase import create_client
-from dotenv import load_dotenv
-import os
+
 
 class Loader:
     def __init__(self, project_url: str, api_key: str ) -> None:
@@ -16,6 +15,11 @@ class Loader:
             print('Client created successfully!')
         except Exception as e:
             print(f'Error caught while connecting to {self.url}: {e}')
+
+
+    def fetch_ids(self) -> list:
+        response = self.supabase.table('collections_id').select('year, identifier').execute()
+        return response.data
 
 
     def insert(self,  records: list) -> None:
