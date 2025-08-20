@@ -13,11 +13,15 @@ if __name__ == "__main__":
     cleaner = Transformer()
     supabase = Loader(supa_url, supa_key)
     supabase.connect()
-    
-    for year, id in id_list.items():
+
+
+    for record in supabase.fetch_ids():
+        year = record['year']
+        identifier = record['identifier']
+        
         try:
             print(f"Fetching {year} file...")
-            df = fetch_dataframe(id)
+            df = fetch_dataframe(identifier)
 
             if not df.empty:
                 df = cleaner.transform(df)
