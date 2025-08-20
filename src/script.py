@@ -28,7 +28,7 @@ if __name__ == "__main__":
                 records = df.to_dict('records')
 
                 supabase.insert(records)
-                print(f"{year} records loaded successfully!")
+                print(f"{year} records loaded successfully!\n")
 
             else:
                 print(f"{year} file is empty or couldn't be found")
