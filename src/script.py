@@ -1,6 +1,6 @@
 from load import Loader
 from transform import Transformer
-from fetch import fetch_dataframe
+from extract import fetch_dataframe
 from dotenv import load_dotenv
 import os
 
@@ -9,13 +9,6 @@ if __name__ == "__main__":
     load_dotenv()
     supa_url = os.environ.get('SUPA_URL')
     supa_key = os.environ.get('API_KEY')
-
-    id_list = {
-        "2023": "c269789d-da47-4dde-8ce7-42fba10fe8e2",
-        "2024": "4adf9430-35a5-4e88-8ecf-b45748b81c7d",
-        "2025": "48bd8822-df18-48d0-bbc1-2de87ca0d70b",
-        }
-
 
     cleaner = Transformer()
     supabase = Loader(supa_url, supa_key)
