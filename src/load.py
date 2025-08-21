@@ -18,7 +18,12 @@ class Loader:
 
 
     def fetch_ids(self) -> list:
-        response = self.supabase.table('collections_id').select('year, identifier').execute()
+        response = (
+            self.supabase.table('collections_id')
+            .select('year, identifier')
+            .eq('fetched false')
+            .execute()
+        )
         return response.data
 
 
