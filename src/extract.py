@@ -3,6 +3,9 @@ import pandas as pd
 
 
 def fetch_dataframe(id: str) -> pd.DataFrame | None:
+	return None
+
+def fetch_dataframe_api(id: str) -> pd.DataFrame | None:
 
 	url = 'http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?'
 	query = 'sql=SELECT * FROM '
