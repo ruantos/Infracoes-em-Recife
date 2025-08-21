@@ -1,6 +1,6 @@
 from load import Loader
 from transform import Transformer
-from extract import fetch_dataframe_api, fetch_dataframe
+from extract import fetch_dataframe
 from dotenv import load_dotenv
 import os
 
@@ -18,14 +18,9 @@ if __name__ == "__main__":
     for record in supabase.fetch_ids():
         year = record['year']
         identifier = record['identifier']
-        
         try:
-
             print(f"Fetching {year} file...")
-            if year < 2021:
-                df = fetch_dataframe_api(identifier)
-            else:
-                df = fetch_dataframe(identifier)
+            df = fetch_dataframe(identifier)
 
             if not df.empty:
                 df = cleaner.transform(df)
