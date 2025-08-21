@@ -18,7 +18,6 @@ if __name__ == "__main__":
     for record in supabase.fetch_ids():
         year = record['year']
         identifier = record['identifier']
-        
         try:
             print(f"Fetching {year} file...")
             df = fetch_dataframe(identifier)

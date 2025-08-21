@@ -21,7 +21,7 @@ class Loader:
         response = (
             self.supabase.table('collections_id')
             .select('year, identifier')
-            .eq('fetched false')
+            .eq('fetched', 'false')
             .execute()
         )
         return response.data
