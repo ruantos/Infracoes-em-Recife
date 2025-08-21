@@ -9,7 +9,7 @@ def fetch_dataframe(id: str) -> pd.DataFrame | None:
 	full_url = f'{url}{query}"{id}"'
 
 	try:
-		response = requests.get(full_url, timeout=30)
+		response = requests.get(full_url, timeout=60)
 		return pd.DataFrame(response.json()["result"]["records"])
 
 	except requests.exceptions.RequestException as error:
