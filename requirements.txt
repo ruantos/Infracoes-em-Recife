@@ -3,4 +3,4 @@ pandas
 psycopg2-binary
 python-dotenv
 supabase
-
+beautifulsoup4
