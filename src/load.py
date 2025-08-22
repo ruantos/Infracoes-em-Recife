@@ -9,31 +9,39 @@ class Loader:
         self.supabase = None
 
 
-    def connect(self) -> None:
+    def connect(self) -> bool:
         try:
             self.supabase = create_client(self.url, self.key)
             print('Client created successfully!')
+            return True
         except Exception as e:
             print(f'Error caught while connecting to {self.url}: {e}')
+            return False
 
 
     def fetch_ids(self) -> list:
-        response = (
-            self.supabase.table('collections_id')
-            .select('year, identifier')
-            .eq('fetched', 'false')
-            .execute()
-        )
-        return response.data
+        try:
+            response = (
+                self.supabase.table('collections_id')
+                .select('year, identifier')
+                .eq('fetched', 'false')
+                .execute()
+            )
+            return response.data
+        except Exception as e:
+            print(f'Error caught fetching IDs: {e}')
+            return []
 
-
-    def update_status(self, id: str) -> None:
-        (self.supabase
-         .table('collections_id')
-         .update( {'fetched': True} )
-         .eq('identifier', id)
-         .execute()
-         )
+    def update_status(self, identifier: str) -> None:
+        try:
+            (self.supabase
+             .table('collections_id')
+             .update( {'fetched': True} )
+             .eq('identifier', identifier)
+             .execute()
+             )
+        except Exception as e:
+            print(f'Error caught updating status: {e}')
 
     def insert(self,  records: list) -> None:
         try:
