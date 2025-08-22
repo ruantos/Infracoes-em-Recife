@@ -1,6 +1,6 @@
 # ETL de Infrações de Trânsito de Recife
 
-Este projeto implementa um pipeline de **ETL (Extract, Transform, Load)** que extrai dados sobre infrações de trânsito do [Portal de Dados Abertos do Recife](http://dados.recife.pe.gov.br/), realiza um processo de limpeza e transformação dos dados, e os carrega em um banco de dados PostgreSQL para futuras análises.
+Este projeto implementa um pipeline de **ETL (Extract, Transform, Load)** que extrai (requests, pandas) dados sobre infrações de trânsito do [Portal de Dados Abertos do Recife](http://dados.recife.pe.gov.br/), realiza um processo de limpeza e transformação (pandas) dos dados, e os carrega em um banco de dados PostgreSQL (Supabase) para futuras análises.
 
 ## Funcionalidades
 
@@ -22,6 +22,7 @@ Este projeto implementa um pipeline de **ETL (Extract, Transform, Load)** que ex
     - `pandas`: para manipulação e transformação dos dados.
     - `psycopg2-binary`: para a conexão com o banco de dados PostgreSQL.
     - `python-dotenv`: para o gerenciamento de variáveis de ambiente.
+    - supabase
 - **Banco de Dados**: PostgreSQL
 
 ## Pré-requisitos
