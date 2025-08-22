@@ -3,13 +3,18 @@ import pandas as pd
 
 class Transformer:
 
+
+    def __init__(self) -> None:
+        self.cols_to_drop = [
+        'dataimplantacao', 'descricaoinfracao', '_id',
+        'amparolegal', '_full_text',
+        'horainfracao', 'datainfracao'
+        ]
+
+    
     def drop_columns(self, df: pd.DataFrame) -> pd.DataFrame:
-        cols_to_drop = [
-            'dataimplantacao', 'descricaoinfracao', '_id',
-            'amparolegal', '_full_text',
-            'horainfracao', 'datainfracao'
-            ]
-        return df.drop(columns=cols_to_drop)
+        return df.drop(columns=self.cols_to_drop)
+
 
     def extract_date(self, df: pd.DataFrame) -> pd.DataFrame:
         df['horainfracao'] = pd.to_datetime(df['horainfracao'],
@@ -30,12 +35,14 @@ class Transformer:
 
         return df
 
+
     def remove_garbage(self, df: pd.DataFrame) -> pd.DataFrame:
         df = df.drop_duplicates(
             subset=["infracao", "hora", "ano", "mes"])
 
         df = df.dropna(axis=0, subset=["infracao"])
         return df
+
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         df = self.fix_columns(df)
