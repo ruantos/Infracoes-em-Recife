@@ -27,6 +27,7 @@ if __name__ == "__main__":
                 records = df.to_dict('records')
 
                 supabase.insert(records)
+                supabase.update_status(identifier)
                 print(f"{year} records loaded successfully!\n")
 
             else:

@@ -1,4 +1,6 @@
 from supabase import create_client
+from dotenv import load_dotenv
+import os
 
 
 class Loader:
@@ -26,6 +28,14 @@ class Loader:
         )
         return response.data
 
+
+    def update_status(self, id: str) -> None:
+        (self.supabase
+         .table('collections_id')
+         .update( {'fetched': True} )
+         .eq('identifier', id)
+         .execute()
+         )
 
     def insert(self,  records: list) -> None:
         try:
