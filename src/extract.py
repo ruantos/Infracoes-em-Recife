@@ -2,15 +2,23 @@ import requests
 import pandas as pd
 
 
-def fetch_dataframe(id: str) -> pd.DataFrame | None:
+URL = 'http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?'
 
-	url = 'http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?'
+
+def fetch_dataframe(identifier: str) -> pd.DataFrame | None:
+
 	query = 'sql=SELECT * FROM '
-	full_url = f'{url}{query}"{id}"'
+	url_params = f'{URL}{query}"{identifier}"'
 
 	try:
-		response = requests.get(full_url, timeout=60)
-		return pd.DataFrame(response.json()["result"]["records"])
+		response = requests.get(url_params,
+		                        timeout=60)
+		records = response.json()["result"]["records"]
+
+		if not records:
+			print(f'No records found for dataset: {identifier}')
+			return pd.DataFrame(records)
+		return pd.DataFrame(records)
 
 	except requests.exceptions.RequestException as error:
 		print(f"An error occurred while trying to fetch dataframe: {error}")
