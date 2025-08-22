@@ -9,15 +9,21 @@ if __name__ == "__main__":
     load_dotenv()
     supa_url = os.environ.get('SUPA_URL')
     supa_key = os.environ.get('API_KEY')
+    if not supa_url or not supa_key:
+        print('Supabase URL and API key are not set')
 
     cleaner = Transformer()
     supabase = Loader(supa_url, supa_key)
+
+
+
     supabase.connect()
 
 
     for record in supabase.fetch_ids():
         year = record['year']
         identifier = record['identifier']
+
         try:
             print(f"Fetching {year} file...")
             df = fetch_dataframe(identifier)
