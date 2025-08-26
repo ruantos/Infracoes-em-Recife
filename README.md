@@ -20,7 +20,7 @@ Este projeto implementa um pipeline de **ETL (Extract, Transform, Load)** que ex
 - **Bibliotecas Principais**:
     - `requests`: para realizar as chamadas à API.
     - `pandas`: para manipulação e transformação dos dados.
-    - `psycopg2-binary`: para a conexão com o banco de dados PostgreSQL.
+    - `supabase`: para a conexão com o banco de dados PostgreSQL.
     - `python-dotenv`: para o gerenciamento de variáveis de ambiente.
 - **Banco de Dados**: PostgreSQL
 
@@ -66,11 +66,8 @@ pip install -r requirements.tx
 Crie um arquivo chamado .env na raiz do projeto. Ele guardará as credenciais de acesso ao seu banco de dados. Copie o conteúdo abaixo e preencha com suas informações.
 ```bash
 # .env
-DB_HOST=localhost
-DATABASE=etl
-DB_USER=postgres
-DB_PASSWORD=sua_senha
-PORT=5432
+SUPA_URL="MY_PROJECT_URL"
+API_KEY="MY_API_KEY"
 ```
 
 ## Como usar?
