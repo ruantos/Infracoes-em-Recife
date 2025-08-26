@@ -12,13 +12,13 @@ def fetch_dataframe(identifier: str) -> pd.DataFrame | None:
 	url_params = f'{ENDPOINT}{query}"{identifier}"'
 
 	try:
-		response = requests.get(url_params,
-		                        timeout=60)
+		response = requests.get(url_params, timeout=60)
 		records = response.json()["result"]["records"]
 
 		if not records:
 			print(f'No records found for dataset: {identifier}')
 			return pd.DataFrame(records)
+
 		return pd.DataFrame(records)
 
 	except requests.exceptions.RequestException as error:
@@ -26,7 +26,7 @@ def fetch_dataframe(identifier: str) -> pd.DataFrame | None:
 		return None
 
 
-def get_links() -> list[str]:
+def get_links() -> list[dict[str, str]]:
 	links = []
 
 	try:
@@ -37,7 +37,8 @@ def get_links() -> list[str]:
 		for tag in tags:
 			dataset = {
 				'year': tag.get('title').split()[-1],
-				'link': tag.get('href')
+				'link': tag.get('href'),
+				'id': None
 			}
 			links.append(dataset)
 
@@ -45,3 +46,36 @@ def get_links() -> list[str]:
 	except requests.exceptions.RequestException as e:
 		print(f"An error occurred while fetching links: {e}")
 		return links
+
+
+def fetch_id(dataset: dict[str, str]) -> str | None:
+	url = f'http://dados.recife.pe.gov.br{dataset['link']}'
+	try:
+		response = requests.get(url, timeout=60)
+
+		soup = BeautifulSoup(response.text, 'html.parser')
+		element = soup.find('th', string='id')
+		if element:
+			return element.find_next_sibling('td').text
+
+		print(f'ID wasnt found: {dataset["id"]}')
+		return None
+
+	except requests.exceptions.RequestException as e:
+		print(f'An error occurred while trying to fetch {dataset['year']} ID: {e}')
+		return None
+
+
+def get_ids() -> list[dict[str, str]] | None:
+	links = get_links()
+	for i in range(len(links)):
+		links[i]['id'] = fetch_id(links[i])
+
+	return links
+
+
+if __name__ == '__main__':
+	df = get_ids()
+	for dataset in df:
+		print(dataset)
+		print()
