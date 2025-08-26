@@ -1,5 +1,5 @@
 from supabase import create_client
-
+from extract import get_ids
 
 class Loader:
     def __init__(self, project_url: str, api_key: str ) -> None:
@@ -53,3 +53,41 @@ class Loader:
                 print('Empty records')
         except Exception as e:
             print(f"Error during insertion: {e}")
+
+
+    def id_exist(self, year: str) -> bool:
+        match = 0
+        try:
+            match = (self.supabase
+             .table('infracoes')
+             .select('year', count='exact')
+             .eq('year', year)
+             .execute()
+             )
+        except Exception as e:
+            print(f'Error during id_exist verification: {e}')
+
+        return match > 0
+
+
+    def insert_id(self, dataset: dict['str', 'str']):
+        (self.supabase
+         .table('collections_id')
+         .insert(
+            {
+                'year': dataset['year'],
+                'identifier': dataset['id'],
+                'fetched': False,
+            })
+         .execute())
+
+
+    def update_collection(self):
+        collection = get_ids()
+        for dataset in collection:
+            if( self.id_exist(dataset['year']) ):
+                continue
+            else:
+                self.insert_id(dataset)
+
+
