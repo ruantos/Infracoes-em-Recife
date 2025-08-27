@@ -61,14 +61,13 @@ class Loader:
         match = 0
         try:
             match = (self.supabase
-             .table('infracoes')
+             .table('collections_id')
              .select('year', count='exact')
              .eq('year', year)
              .execute()
-             )
+             ).count
         except Exception as e:
             print(f'Error during id_exist verification: {e}')
-
         return match > 0
 
 
@@ -91,13 +90,3 @@ class Loader:
                 continue
             else:
                 self.insert_id(dataset)
-
-
-
-if __name__ == '__main__':
-    SUPA_URL = 'https: // wmtzrtxnwjioekyzjctz.supabase.co'
-    API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtdHpydHhud2ppb2VreXpqY3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1NzA4NDAsImV4cCI6MjA3MTE0Njg0MH0.29nn7MRaBcqAWSB-ApRivsJdnn0l3ykRD3ZgK43oWUg'
-    loader = Loader(SUPA_URL, API_KEY)
-
-    loader.connect()
-    loader.fetch_ids()
