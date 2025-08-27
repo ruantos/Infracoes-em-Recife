@@ -1,5 +1,8 @@
 from supabase import create_client
 from extract import get_ids
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Loader:
     def __init__(self, project_url: str, api_key: str ) -> None:
@@ -12,10 +15,10 @@ class Loader:
     def connect(self) -> bool:
         try:
             self.supabase = create_client(self.url, self.key)
-            print('Client created successfully!')
+            logger.info('Client created successfully!')
             return True
         except Exception as e:
-            print(f'Error caught while connecting to {self.url}: {e}')
+            logger.error(f'Error caught while connecting to {self.url}: {e}')
             return False
 
 
@@ -29,7 +32,7 @@ class Loader:
             )
             return response.data
         except Exception as e:
-            print(f'Error caught fetching IDs: {e}')
+            logger.error(f'Error caught fetching IDs: {e}')
             return []
 
 
@@ -42,19 +45,19 @@ class Loader:
              .execute()
              )
         except Exception as e:
-            print(f'Error caught updating status: {e}')
+            logger.error(f'Error caught updating status: {e}')
 
 
     def insert(self,  records: list) -> None:
         try:
             if records:
                 self.supabase.table('infracoes').insert(records).execute()
-                print(f'{len(records)} records inserted :)')
+                logger.info(f'{len(records)} records inserted :)')
 
             else:
-                print('Empty records')
+                logger.warning('Empty records')
         except Exception as e:
-            print(f"Error during insertion: {e}")
+            logger.error(f"Error during insertion: {e}")
 
 
     def id_exist(self, year: str) -> bool:
@@ -67,7 +70,7 @@ class Loader:
              .execute()
              ).count
         except Exception as e:
-            print(f'Error during id_exist verification: {e}')
+            logger.error(f'Error during id_exist verification: {e}')
         return match > 0
 
 
@@ -86,7 +89,7 @@ class Loader:
     def update_collection(self):
         collection = get_ids()
         for dataset in collection:
-            if( self.id_exist(dataset['year']) ):
+            if self.id_exist(dataset['year']):
                 continue
             else:
                 self.insert_id(dataset)

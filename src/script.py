@@ -2,13 +2,21 @@ from load import Loader
 from transform import Transformer
 from extract import fetch_dataframe
 from dotenv import load_dotenv
+import logging
 import os
 
-if __name__ == "__main__":
-    
+logging.getLogger('httpx').setLevel(logging.WARNING)
+
+if __name__ == '__main__':
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO,
+                        filename='info.log', filemode='a',
+                        format='%(asctime)s - [%(name)s]- [%(levelname)s]: %(message)s')
+
     load_dotenv()
     supa_url = os.environ.get('SUPA_URL')
     supa_key = os.environ.get('API_KEY')
+
     if not supa_url or not supa_key:
         print('Supabase URL and API key are not set')
 
@@ -25,7 +33,7 @@ if __name__ == "__main__":
         identifier = record['identifier']
 
         try:
-            print(f"Fetching {year} file...")
+            logger.info(f"Fetching {year} file...")
             df = fetch_dataframe(identifier)
 
             if not df.empty:
@@ -34,10 +42,10 @@ if __name__ == "__main__":
 
                 supabase.insert(records)
                 supabase.update_status(identifier)
-                print(f"{year} records loaded successfully!\n")
+                logger.info(f"{year} records loaded successfully!\n")
 
             else:
-                print(f"{year} file is empty or couldn't be found")
+                logger.warning(f"{year} file is empty or couldn't be found")
 
         except Exception as e:
-            print(f"Error caught : {e}")
+            logger.warning(f"Error caught while fetching {year} file: {e}")

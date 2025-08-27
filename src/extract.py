@@ -1,10 +1,11 @@
 import requests
 import pandas as pd
+import logging
 from bs4 import BeautifulSoup
 
 ENDPOINT = 'http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?'
 URL = "http://dados.recife.pe.gov.br/dataset/registro-das-infracoes-de-transito"
-
+logger = logging.getLogger(__name__)
 
 def fetch_dataframe(identifier: str) -> pd.DataFrame:
 
@@ -16,13 +17,17 @@ def fetch_dataframe(identifier: str) -> pd.DataFrame:
 		records = response.json()["result"]["records"]
 
 		if not records:
-			print(f'No records found for dataset: {identifier}')
+			logger.warning(f'No records found for dataset: {identifier}')
 			return pd.DataFrame(records)
 
 		return pd.DataFrame(records)
 
-	except requests.exceptions.RequestException as error:
-		print(f"An error occurred while trying to fetch dataframe: {error}")
+	except KeyError as e:
+		logger.warning(f'No records found for dataset: {identifier}')
+		return pd.DataFrame(records)
+
+	except requests.exceptions.RequestException as e:
+		logger.warning(f"An error occurred while trying to fetch dataframe: {e}")
 
 
 def get_links() -> list[dict[str, str]]:
@@ -43,7 +48,7 @@ def get_links() -> list[dict[str, str]]:
 
 		return links
 	except requests.exceptions.RequestException as e:
-		print(f"An error occurred while fetching links: {e}")
+		logger.error(f"An error occurred while fetching links: {e}")
 		return links
 
 
@@ -57,11 +62,11 @@ def fetch_id(dataset: dict[str, str]) -> str | None:
 		if element:
 			return element.find_next_sibling('td').text
 		else:
-			print(f'ID wasnt found: {dataset['year']}\nTrying again')
+			logger.warning(f'ID wasnt found: {dataset['year']}\nTrying again')
 			return fetch_id(dataset)
 
 	except requests.exceptions.RequestException as e:
-		print(f'An error occurred while trying to fetch {dataset['year']} ID: {e}')
+		logger.error(f'An error occurred while trying to fetch {dataset['year']} ID: {e}')
 		return None
 
 
