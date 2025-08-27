@@ -43,7 +43,7 @@ if __name__ == '__main__':
                 logger.info(f"{year} records loaded successfully!\n")
 
             else:
-                logger.info(f"{year} file is empty or couldn't be found")
+                logger.warning(f"{year} file is empty or couldn't be found")
 
         except Exception as e:
-            logger.info(f"Error caught while fetching {year} file: {e}")
+            logger.warning(f"Error caught while fetching {year} file: {e}")
