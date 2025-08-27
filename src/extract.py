@@ -57,8 +57,8 @@ def fetch_id(dataset: dict[str, str]) -> str | None:
 		if element:
 			return element.find_next_sibling('td').text
 		else:
-			print(f'ID wasnt found: {dataset['year']}')
-			return None
+			print(f'ID wasnt found: {dataset['year']}\nTrying again')
+			return fetch_id(dataset)
 
 	except requests.exceptions.RequestException as e:
 		print(f'An error occurred while trying to fetch {dataset['year']} ID: {e}')
