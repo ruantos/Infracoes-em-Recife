@@ -22,6 +22,10 @@ def fetch_dataframe(identifier: str) -> pd.DataFrame:
 
 		return pd.DataFrame(records)
 
+	except KeyError as e:
+		logger.warning(f'No records found for dataset: {identifier}')
+		return pd.DataFrame(records)
+
 	except requests.exceptions.RequestException as e:
 		logger.warning(f"An error occurred while trying to fetch dataframe: {e}")
 
