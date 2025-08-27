@@ -9,7 +9,7 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO,
                         filename='info.log', filemode='a',
-                        format='%(asctime)s - [%(levelname)s]: %(message)s')
+                        format='%(asctime)s - [%(name)s]- [%(levelname)s]: %(message)s')
 
     load_dotenv()
     supa_url = os.environ.get('SUPA_URL')
