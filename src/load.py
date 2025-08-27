@@ -32,6 +32,7 @@ class Loader:
             print(f'Error caught fetching IDs: {e}')
             return []
 
+
     def update_status(self, identifier: str) -> None:
         try:
             (self.supabase
@@ -42,6 +43,7 @@ class Loader:
              )
         except Exception as e:
             print(f'Error caught updating status: {e}')
+
 
     def insert(self,  records: list) -> None:
         try:
@@ -91,3 +93,11 @@ class Loader:
                 self.insert_id(dataset)
 
 
+
+if __name__ == '__main__':
+    SUPA_URL = 'https: // wmtzrtxnwjioekyzjctz.supabase.co'
+    API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtdHpydHhud2ppb2VreXpqY3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1NzA4NDAsImV4cCI6MjA3MTE0Njg0MH0.29nn7MRaBcqAWSB-ApRivsJdnn0l3ykRD3ZgK43oWUg'
+    loader = Loader(SUPA_URL, API_KEY)
+
+    loader.connect()
+    loader.fetch_ids()
