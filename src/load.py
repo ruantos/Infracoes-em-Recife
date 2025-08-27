@@ -1,5 +1,5 @@
 from supabase import create_client
-
+from extract import get_ids
 
 class Loader:
     def __init__(self, project_url: str, api_key: str ) -> None:
@@ -32,6 +32,7 @@ class Loader:
             print(f'Error caught fetching IDs: {e}')
             return []
 
+
     def update_status(self, identifier: str) -> None:
         try:
             (self.supabase
@@ -43,6 +44,7 @@ class Loader:
         except Exception as e:
             print(f'Error caught updating status: {e}')
 
+
     def insert(self,  records: list) -> None:
         try:
             if records:
@@ -53,3 +55,38 @@ class Loader:
                 print('Empty records')
         except Exception as e:
             print(f"Error during insertion: {e}")
+
+
+    def id_exist(self, year: str) -> bool:
+        match = 0
+        try:
+            match = (self.supabase
+             .table('collections_id')
+             .select('year', count='exact')
+             .eq('year', year)
+             .execute()
+             ).count
+        except Exception as e:
+            print(f'Error during id_exist verification: {e}')
+        return match > 0
+
+
+    def insert_id(self, dataset: dict['str', 'str']):
+        (self.supabase
+         .table('collections_id')
+         .insert(
+            {
+                'year': dataset['year'],
+                'identifier': dataset['id'],
+                'fetched': False,
+            })
+         .execute())
+
+
+    def update_collection(self):
+        collection = get_ids()
+        for dataset in collection:
+            if( self.id_exist(dataset['year']) ):
+                continue
+            else:
+                self.insert_id(dataset)

@@ -6,7 +6,7 @@ ENDPOINT = 'http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?'
 URL = "http://dados.recife.pe.gov.br/dataset/registro-das-infracoes-de-transito"
 
 
-def fetch_dataframe(identifier: str) -> pd.DataFrame | None:
+def fetch_dataframe(identifier: str) -> pd.DataFrame:
 
 	query = 'sql=SELECT * FROM '
 	url_params = f'{ENDPOINT}{query}"{identifier}"'
@@ -23,7 +23,6 @@ def fetch_dataframe(identifier: str) -> pd.DataFrame | None:
 
 	except requests.exceptions.RequestException as error:
 		print(f"An error occurred while trying to fetch dataframe: {error}")
-		return None
 
 
 def get_links() -> list[dict[str, str]]:
@@ -57,9 +56,9 @@ def fetch_id(dataset: dict[str, str]) -> str | None:
 		element = soup.find('th', string='id')
 		if element:
 			return element.find_next_sibling('td').text
-
-		print(f'ID wasnt found: {dataset["id"]}')
-		return None
+		else:
+			print(f'ID wasnt found: {dataset['year']}\nTrying again')
+			return fetch_id(dataset)
 
 	except requests.exceptions.RequestException as e:
 		print(f'An error occurred while trying to fetch {dataset['year']} ID: {e}')
@@ -68,14 +67,7 @@ def fetch_id(dataset: dict[str, str]) -> str | None:
 
 def get_ids() -> list[dict[str, str]] | None:
 	links = get_links()
+
 	for i in range(len(links)):
 		links[i]['id'] = fetch_id(links[i])
-
 	return links
-
-
-if __name__ == '__main__':
-	df = get_ids()
-	for dataset in df:
-		print(dataset)
-		print()
