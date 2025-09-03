@@ -11,6 +11,8 @@ info.log
 .idea
 # Distribution / packaging
 .Python
+.python-version
+
 build/
 develop-eggs/
 dist/
