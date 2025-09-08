@@ -1,4 +1,4 @@
-FROM apache/airflow:3.0.6
+FROM apache/airflow:2.8.1-python3.11
 ENV PYTHONPATH /opt/airflow
 COPY requirements.txt /requirements.txt
 RUN pip install --upgrade pip
