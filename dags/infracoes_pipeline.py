@@ -11,7 +11,9 @@ import sys
 import os
 
 
-sys.path.append('~/Projects/PycharmProjects/Infracoes-em-Recife')
+DAG_FOLDER = Path(__file__).parent
+PROJECT_ROOT = DAG_FOLDER.parent
+sys.path.append(str(PROJECT_ROOT))
 
 from src.load import Loader
 from src.transform import Transformer
