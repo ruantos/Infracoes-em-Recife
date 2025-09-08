@@ -7,6 +7,7 @@ ENDPOINT = 'http://dados.recife.pe.gov.br/api/3/action/datastore_search_sql?'
 URL = "http://dados.recife.pe.gov.br/dataset/registro-das-infracoes-de-transito"
 logger = logging.getLogger(__name__)
 
+
 def fetch_dataframe(identifier: str) -> pd.DataFrame:
 
 	query = 'sql=SELECT * FROM '
@@ -53,7 +54,7 @@ def get_links() -> list[dict[str, str]]:
 
 
 def fetch_id(dataset: dict[str, str]) -> str | None:
-	url = f'http://dados.recife.pe.gov.br{dataset['link']}'
+	url = f'http://dados.recife.pe.gov.br{dataset["link"]}'
 	try:
 		response = requests.get(url, timeout=60)
 
@@ -62,11 +63,11 @@ def fetch_id(dataset: dict[str, str]) -> str | None:
 		if element:
 			return element.find_next_sibling('td').text
 		else:
-			logger.warning(f'ID wasnt found: {dataset['year']}\nTrying again')
+			logger.warning(f'ID wasnt found: {dataset["year"]}\nTrying again')
 			return fetch_id(dataset)
 
 	except requests.exceptions.RequestException as e:
-		logger.error(f'An error occurred while trying to fetch {dataset['year']} ID: {e}')
+		logger.error(f'An error occurred while trying to fetch {dataset["year"]} ID: {e}')
 		return None
 
 
