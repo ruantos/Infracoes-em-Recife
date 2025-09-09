@@ -1,7 +1,8 @@
 from load import Loader
-from transform import Transformer
+from transform import transform
 from extract import fetch_dataframe
 from dotenv import load_dotenv
+import duckdb
 import logging
 import os
 
@@ -20,7 +21,6 @@ if __name__ == '__main__':
     if not supa_url or not supa_key:
         print('Supabase URL and API key are not set')
 
-    cleaner = Transformer()
     supabase = Loader(supa_url, supa_key)
 
 
@@ -37,9 +37,8 @@ if __name__ == '__main__':
             df = fetch_dataframe(identifier)
 
             if not df.empty:
-                df = cleaner.transform(df)
-                records = df.to_dict('records')
-
+                df = transform(df)
+                records = df.to_df().to_dict('records')
                 supabase.insert(records)
                 supabase.update_status(identifier)
                 logger.info(f"{year} records loaded successfully!\n")
