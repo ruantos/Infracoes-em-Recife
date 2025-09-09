@@ -1,16 +1,25 @@
-import pandas as pd
 import duckdb
+from pandas import DataFrame
 
 
-def remove_garbage(df: duckdb.DuckDBPyRelation) -> pd.DataFrame:
-    df = df.drop_duplicates(
-        subset=["infracao", "hora", "ano", "mes"])
+def remove_garbage(relation: duckdb.DuckDBPyRelation) -> duckdb.DuckDBPyRelation:
+    duckdb.sql("""
+            WITH duplicatedRows AS (
+                SELECT 
+                    *,
+                    ROW_NUMBER() OVER (PARTITION BY infracao, hora, ano, mes) as n_row 
+                FROM relation
+                WHERE infracao IS NOT NULL)
+                
+            SELECT * EXCLUDE (n_row)
+            FROM duplicatedRows
+            WHERE n_row = 1;
+            """)
 
-    df = df.dropna(axis=0, subset=["infracao"])
-    return df
+    return relation
 
 
-def fix_columns(df: pd.DataFrame) -> duckdb.DuckDBPyRelation:
+def fix_columns(relation: duckdb.DuckDBPyRelation) -> duckdb.DuckDBPyRelation:
     return duckdb.sql("""
         SELECT 
             AgenteEquipamento,
@@ -20,11 +29,13 @@ def fix_columns(df: pd.DataFrame) -> duckdb.DuckDBPyRelation:
             MONTH( CAST(datainfracao AS DATE) ) AS mes,
             HOUR( CAST(horainfracao AS TIME) ) AS hora,
             ISODOW( CAST(datainfracao AS DATE)) > 5 AS is_feriado 
-        FROM df
+        FROM relation
     """)
 
 
-def transform(df: pd.DataFrame) -> pd.DataFrame:
-    df = fix_columns(df)
-    df = remove_garbage(df)
-    return df
+def transform(df: DataFrame) -> duckdb.DuckDBPyRelation:
+    relation = duckdb.from_df(df)
+    relation = fix_columns(relation)
+    relation = remove_garbage(relation)
+
+    return relation
