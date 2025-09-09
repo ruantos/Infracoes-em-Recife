@@ -10,13 +10,13 @@ logger = logging.getLogger(__name__)
 
 def fetch_dataframe(identifier: str) -> pd.DataFrame:
 
+	records = {}
 	query = 'sql=SELECT * FROM '
 	url_params = f'{ENDPOINT}{query}"{identifier}"'
 
 	try:
 		response = requests.get(url_params, timeout=60)
 		records = response.json()["result"]["records"]
-
 		if not records:
 			logger.warning(f'No records found for dataset: {identifier}')
 			return pd.DataFrame(records)
@@ -24,7 +24,7 @@ def fetch_dataframe(identifier: str) -> pd.DataFrame:
 		return pd.DataFrame(records)
 
 	except KeyError as e:
-		logger.warning(f'No records found for dataset: {identifier}')
+		logger.warning(f'No records found for dataset: {identifier}\nError: {e}')
 		return pd.DataFrame(records)
 
 	except requests.exceptions.RequestException as e:
