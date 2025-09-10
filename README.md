@@ -17,12 +17,13 @@ Este projeto implementa um pipeline de **ETL (Extract, Transform, Load)** que ex
 ## Tecnologias Utilizadas
 
 - **Linguagem**: Python 3
-- **Bibliotecas Principais**:
+- **Ferramentas utilidades**:
     - `requests`: para realizar as chamadas à API.
     - `pandas`: para manipulação e transformação dos dados.
     - `supabase`: para a conexão com o banco de dados PostgreSQL.
     - `python-dotenv`: para o gerenciamento de variáveis de ambiente.
-    - supabase
+    - `airflow`: para orquestração de tasks
+    - `docker`: para padronização compartimentalização de ambiente
 - **Banco de Dados**: PostgreSQL
 
 ## Pré-requisitos
@@ -76,4 +77,27 @@ API_KEY="MY_API_KEY"
 Basta navegar até o diretório do projeto e digitar:
 ```bash
 python3 src/script.py
+```
+
+## Estrutura do projeto
+
+```
+.
+├── config
+│   └── airflow.cfg
+├── dags
+│   ├── infracoes_pipeline.py
+├── docker-compose.yaml
+├── Dockerfile
+├── info.log
+├── LICENSE
+├── logs
+├── plugins
+├── README.md
+├── requirements.txt
+└── src
+    ├── extract.py
+    ├── __init__.py
+    ├── load.py
+    └── transform.py
 ```
