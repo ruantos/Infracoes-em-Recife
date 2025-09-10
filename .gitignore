@@ -2,15 +2,18 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
+.python-version
 #
 info.log
+logs/*
 
 # C extensions
 *.so
 .idea
 # Distribution / packaging
 .Python
+.python-version
+
 build/
 develop-eggs/
 dist/

@@ -1,50 +1,41 @@
-import pandas as pd
+import duckdb
+from pandas import DataFrame
 
 
-class Transformer:
+def remove_garbage(relation: duckdb.DuckDBPyRelation) -> duckdb.DuckDBPyRelation:
+    duckdb.sql("""
+            WITH duplicatedRows AS (
+                SELECT 
+                    *,
+                    ROW_NUMBER() OVER (PARTITION BY infracao, hora, ano, mes) as n_row 
+                FROM relation
+                WHERE infracao IS NOT NULL)
+                
+            SELECT * EXCLUDE (n_row)
+            FROM duplicatedRows
+            WHERE n_row = 1;
+            """)
+
+    return relation
 
 
-    def __init__(self) -> None:
-        self.cols_to_drop = [
-        'dataimplantacao', 'descricaoinfracao', '_id',
-        'amparolegal', '_full_text',
-        'horainfracao', 'datainfracao'
-        ]
-
-    
-    def drop_columns(self, df: pd.DataFrame) -> pd.DataFrame:
-        return df.drop(columns=self.cols_to_drop)
-
-
-    def extract_date(self, df: pd.DataFrame) -> pd.DataFrame:
-        df['horainfracao'] = pd.to_datetime(df['horainfracao'],
-                                            format="%H:%M:%S")
-        df['datainfracao'] = pd.to_datetime(df['datainfracao'], yearfirst=True)
-
-        df["ano"] = df["datainfracao"].dt.year
-        df["mes"] = df["datainfracao"].dt.month
-        df["hora"] = df["horainfracao"].dt.hour
-
-        df["is_feriado"] = df["datainfracao"].dt.weekday > 4
-
-        return df
-
-    def fix_columns(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = self.extract_date(df)
-        df = self.drop_columns(df)
-
-        return df
+def fix_columns(relation: duckdb.DuckDBPyRelation) -> duckdb.DuckDBPyRelation:
+    return duckdb.sql("""
+        SELECT 
+            AgenteEquipamento,
+            Infracao,
+            LocalCometimento,
+            YEAR( CAST(datainfracao AS DATE) ) AS ano,
+            MONTH( CAST(datainfracao AS DATE) ) AS mes,
+            HOUR( CAST(horainfracao AS TIME) ) AS hora,
+            ISODOW( CAST(datainfracao AS DATE)) > 5 AS is_feriado 
+        FROM relation
+    """)
 
 
-    def remove_garbage(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.drop_duplicates(
-            subset=["infracao", "hora", "ano", "mes"])
+def transform(df: DataFrame) -> duckdb.DuckDBPyRelation:
+    relation = duckdb.from_df(df)
+    relation = fix_columns(relation)
+    relation = remove_garbage(relation)
 
-        df = df.dropna(axis=0, subset=["infracao"])
-        return df
-
-
-    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = self.fix_columns(df)
-        df = self.remove_garbage(df)
-        return df
+    return relation
