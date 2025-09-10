@@ -1,6 +1,6 @@
 # ETL de Infrações de Trânsito de Recife
 
-Este projeto implementa um pipeline de **ETL (Extract, Transform, Load)** que extrai (requests, pandas) dados sobre infrações de trânsito do [Portal de Dados Abertos do Recife](http://dados.recife.pe.gov.br/), realiza um processo de limpeza e transformação (pandas) dos dados, e os carrega em um banco de dados PostgreSQL (Supabase) para futuras análises.
+Este projeto implementa um pipeline **ETL (Extract, Transform, Load)** que extrai (requests, pandas) dados sobre infrações de trânsito do [Portal de Dados Abertos do Recife](http://dados.recife.pe.gov.br/), realiza um processo de limpeza e transformação (pandas) dos dados, e os carrega em um banco de dados PostgreSQL (Supabase) para futuras análises.
 
 ## Funcionalidades
 
@@ -10,13 +10,14 @@ Este projeto implementa um pipeline de **ETL (Extract, Transform, Load)** que ex
     - Conversão e extração de componentes de data e hora (`ano`, `mes`, `hora`).
     - Criação de novas features, como a identificação de feriados (`is_feriado`).
     - Remoção de dados duplicados e nulos para garantir a qualidade.
-- **Carregamento**: Inserção dos dados tratados de forma segura e eficiente em uma tabela PostgreSQL.
+- **Carregamento**: Inserção dos dados tratados em uma tabela PostgreSQL.
 - **Modularidade**: O código é organizado em classes (`Pipeline` e `Manager`) que separam as responsabilidades do processo de ETL.
 - **Configuração Segura**: Utiliza variáveis de ambiente (`.env`) para gerenciar credenciais do banco de dados, evitando exposição de informações sensíveis no código.
+- **Orquestração** Utiliza Airflow para orquestração das etapas do ETL
 
 ## Tecnologias Utilizadas
 
-- **Linguagem**: Python 3
+- **Linguagem**: Python 3.11.6
 - **Ferramentas utilidades**:
     - `requests`: para realizar as chamadas à API.
     - `pandas`: para manipulação e transformação dos dados.
