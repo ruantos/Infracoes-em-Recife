@@ -16,7 +16,7 @@ PROJECT_ROOT = DAG_FOLDER.parent
 sys.path.append(str(PROJECT_ROOT))
 
 from src.load import Loader
-from src.transform import Transformer
+from src.transform import transform
 
 logger = logging.Logger(__name__)
 logging.basicConfig(level=logging.INFO,
@@ -80,11 +80,10 @@ def workflow():
 	@task()
 	def transform(df: pd.DataFrame) -> list[dict] | None:
 		if df is not None and not df.empty:
-			cleaner = Transformer()
 
 			identifier = df['identifier'].iloc[0]
 
-			df = cleaner.transform(df)
+			df = transform(df)
 			records = df.to_dict('records')
 			for record in records:
 				record['identifier'] = identifier
